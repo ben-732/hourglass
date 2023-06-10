@@ -9,9 +9,9 @@
 #endif
 
 
-#define CLIENT_ID Hourglass1
+#define CLIENT_ID "Hourglass1"
 
-#define PIN 3
+#define PIN 2
 #define LED_COUNT 14
 
 
@@ -26,7 +26,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800
 
 unsigned long pixelPrevious = 0;        // Previous Pixel Millis
 unsigned long patternPrevious = 0;      // Previous Pattern Millis
-char          patternCurrent[] = "off";       // Current Pattern Number
+int          patternCurrent = 0;       // Current Pattern Number
 int           patternInterval = 5000;   // Pattern Interval (ms)
 int           pixelInterval = 50;       // Pixel Interval (ms)
 int           pixelQueue = 0;           // Pattern Pixel Queue
@@ -48,9 +48,9 @@ int count = 0;
 void setup() {
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  // while (!Serial) {
+  //   ; // wait for serial port to connect. Needed for native USB port only
+  // }
 
   // attempt to connect to WiFi network:
   Serial.print("Attempting to connect to WPA SSID: ");
@@ -102,39 +102,22 @@ void setup() {
 
 void loop() {
   mqttClient.poll();
-  if((currentMillis - patternPrevious) >= patternInterval) {  //  Check for expired time
-    patternPrevious = currentMillis;
-    patternCurrent++;                                         //  Advance to next pattern
-    if(patternCurrent >= 7)
-      patternCurrent = 0;
-  }
+
+  unsigned long currentMillis = millis();                     //  Update current time
+
   
   if(currentMillis - pixelPrevious >= pixelInterval) {        //  Check for expired time
     pixelPrevious = currentMillis;                            //  Run current frame
     switch (patternCurrent) {
-      case 7:
-        theaterChaseRainbow(50); // Rainbow-enhanced theaterChase variant
-        break;
-      case 6:
+      case 1:
         rainbow(10); // Flowing rainbow cycle along the whole strip
-        break;     
-      case 5:
-        theaterChase(strip.Color(0, 0, 127), 50); // Blue
-        break;
-      case 4:
-        theaterChase(strip.Color(127, 0, 0), 50); // Red
-        break;
-      case 3:
-        theaterChase(strip.Color(127, 127, 127), 50); // White
         break;
       case 2:
-        colorWipe(strip.Color(0, 0, 255), 50); // Blue
-        break;
-      case 1:
-        colorWipe(strip.Color(0, 255, 0), 50); // Green
-        break;        
+        mainEffect(); 
+        break;    
+      case 0:             
       default:
-        colorWipe(strip.Color(255, 0, 0), 50); // Red
+        offEffect(); 
         break;
     }
   }
@@ -144,17 +127,6 @@ void loop() {
 
 void onMqttMessage(int messageSize) {
   // we received a message, print out the topic and contents
-  Serial.print("Received a message with topic '");
-  Serial.print(mqttClient.messageTopic());
-  Serial.print("', duplicate = ");
-  Serial.print(mqttClient.messageDup() ? "true" : "false");
-  Serial.print(", QoS = ");
-  Serial.print(mqttClient.messageQoS());
-  Serial.print(", retained = ");
-  Serial.print(mqttClient.messageRetain() ? "true" : "false");
-  Serial.print("', length ");
-  Serial.print(messageSize);
-  Serial.println(" bytes:");
 
   char message[100];
   int messageArrSize = 0;
@@ -164,27 +136,90 @@ void onMqttMessage(int messageSize) {
     message[messageArrSize] = (char)mqttClient.read();
     messageArrSize++;
   }
-  
-  patternCurrent = message;
 
+  message[messageArrSize] = '\0';
+  
+  if(strcmp(message, "aran") ==0) {
+    patternCurrent = 1;
+  }else if(strcmp(message, "off") ==0) {
+    patternCurrent = 0;
+  }else if(strcmp(message, "standard") == 0) {
+    patternCurrent = 2;
+  }
+
+  
+  Serial.print("\"");
   Serial.print(message);
+  Serial.print("\" - ");
+  Serial.print(patternCurrent);
+  Serial.println();
+
 
 }
 
 void offEffect() {
-  
+  strip.fill();
+  strip.show();
+}
+
+void mainEffect() {
+  if(pixelInterval != 150)
+    pixelInterval = 150;
+
+  int effect_length = LED_COUNT / 2;
+
+  strip.fill(strip.Color(255, 255, 255));
+
+  for(uint16_t i=0; i < 10; i++) {
+    if(i < 7) {
+      strip.setPixelColor(
+        (i + pixelCycle) % 14, 
+        strip.Color(255 - (131 / 7) * (i), 255 - (255 / 7) * (i), 255)
+      );
+      continue;
+    }
+      strip.setPixelColor((i + pixelCycle) % 14, strip.Color(124, 0, 255));
+
+         
+  }
+
+  pixelCycle++;
+
+  if(pixelCycle >= LED_COUNT)
+    pixelCycle = 0; 
+
+  strip.show();
+}
+
+
+
+
+void white() {
+  strip.fill(strip.Color(255, 255, 255));
 }
 
 void rainbow(uint8_t wait) {
-  uint16_t i, j;
-
-
-
-  for(j=0; j<256; j++) {
-    for(i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   
+  for(uint16_t i=0; i < pixelNumber; i++) {
+    strip.setPixelColor(i, Wheel((i + pixelCycle) & 255)); //  Update delay time  
   }
+  strip.show();                             //  Update strip to match
+  pixelCycle++;                             //  Advance current cycle
+  if(pixelCycle >= 256)
+    pixelCycle = 0;                         //  Loop the cycle back to the begining
 }
+
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
