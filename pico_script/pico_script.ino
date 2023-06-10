@@ -170,7 +170,7 @@ void mainEffect() {
 
   strip.fill(strip.Color(255, 255, 255));
 
-  for(uint16_t i=0; i < 10; i++) {
+  for(uint16_t i=0; i < 14; i++) {
     if(i < 7) {
       strip.setPixelColor(
         (i + pixelCycle) % 14, 

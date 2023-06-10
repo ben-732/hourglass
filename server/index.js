@@ -11,8 +11,23 @@ client.on("connect", () => {
   console.log(`connected, ${client.options.clientId}`);
   // client.subscribe("device_connected");
 
-  client.subscribe("$events/client_disconnected");
-  client.subscribe("$events/client_connected");
+  client.subscribe("disconnect");
+  client.subscribe("ummm");
+
+  // setInterval(() => {
+  //   client.publish("hourglass/change", "standard");
+  // }, 3000);
+  // client.publish("hourglass/change", "aran");
+  client.publish("hourglass/change", "standard");
+  // client.publish("hourglass/change", "off");
+});
+
+client.on("disconnect", () => {
+  console.log("Disconnected");
+});
+
+client.on("close", () => {
+  console.log("Closed");
 });
 
 client.on("message", (topic, message) => {
