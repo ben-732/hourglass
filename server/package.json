@@ -2,5 +2,8 @@
   "dependencies": {
     "mqtt": "^4.3.7",
     "socket.io": "^4.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

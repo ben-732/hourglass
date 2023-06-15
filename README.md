@@ -38,3 +38,7 @@ Running express web server
 - Comms section, stream of comms audio from mediaMTX
   - Privlaged access
 - Status icons for hourglass halves
+
+## Info things
+
+SocketIo server - port 3001

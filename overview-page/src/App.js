@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
 
+import { socket } from "./socket";
+
 function App() {
   const [time, setTime] = useState("NAN");
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [hourglassStats, setHourglassStats] = useState({
+    hourglass1: {
+      connected: false,
+      lastUpdated: null,
+    },
+    hourglass2: {
+      connected: false,
+      lastUpdated: null,
+    },
+  });
 
   const [scenes, setScenes] = useState([
     { name: "Pre Show", id: 0, time: "" },
@@ -33,6 +47,31 @@ function App() {
   ]);
 
   useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onHourglassStatus(value) {
+      console.log(value);
+      setHourglassStats(value);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("hourglassStatus", onHourglassStatus);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("hourglassStatus", onHourglassStatus);
+    };
+  }, []);
+
+  useEffect(() => {
     const intervalId = setInterval(() => {
       setTime(new Date().toLocaleTimeString());
     }, 1000);
@@ -54,6 +93,36 @@ function App() {
 
       <span className="py-8 text-3xl">{time}</span>
 
+      <div className="bg-slate-800 p-4 rounded-md">
+        <span className="font-light text-lg">Connections:</span>
+        <div className="flex flex-col">
+          <div className="flex flex-row items-center ">
+            <span
+              className={`${
+                isConnected ? "bg-green-400" : "bg-red-400"
+              } w-3 h-3 block rounded-full`}
+            />
+            <span className="text-sm mx-1 capitalize">SocketIO client</span>
+          </div>
+          {["hourglass1", "hourglass2"].map((hourglass) => (
+            <div className="flex flex-row items-center " key={hourglass}>
+              <span
+                className={`${
+                  hourglassStats.hourglass1.connected
+                    ? "bg-green-400"
+                    : "bg-red-400"
+                } w-3 h-3 block rounded-full`}
+              />
+              <span className="text-sm mx-1 capitalize">{hourglass}</span>
+
+              <span className="dark:text-gray-500 text-sm">
+                {hourglassStats.hourglass1.lastUpdated || "No Time"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="w-96 h-96 overflow-y-scroll">
         <table className="border-collapse table-auto w-full text-sm">
           <thead className="sticky top-0 border-b dark:border-slate-600 bg-slate-900 ">
@@ -67,11 +136,11 @@ function App() {
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-slate-800 ">
-            {scenes.map((scene) => {
+            {scenes.map((scene, index) => {
               let active = scene.id === activeScene;
 
               return (
-                <tr key={scene.id} className="h-2">
+                <tr key={index} className="h-2">
                   <td
                     className={`border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 ${
                       active ? "dark:text-white" : "dark:text-slate-400"
