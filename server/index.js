@@ -1,6 +1,7 @@
-const app = require("./app");
-const Socket = require("./services/io");
+const { Socket } = require("./services/io");
 const { client } = require("./services/mqtt");
+
+const app = require("./app");
 
 const http = require("http");
 
