@@ -2,6 +2,8 @@
 
 #include <ArduinoMqttClient.h>
 #include <WiFi.h>
+#include <FastLED.h>
+
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -9,10 +11,11 @@
 #endif
 
 
-#define CLIENT_ID "Hourglass1"
+#define CLIENT_ID "Hourglass2"
+
 
 #define PIN 2
-#define LED_COUNT 14
+#define NUM_LEDS 14
 
 
 #include "arduino_secrets.h"
@@ -22,17 +25,13 @@ char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as k
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
+
+CRGBArray<NUM_LEDS> leds;
+
 
 unsigned long pixelPrevious = 0;        // Previous Pixel Millis
-unsigned long patternPrevious = 0;      // Previous Pattern Millis
 int          patternCurrent = 0;       // Current Pattern Number
-int           patternInterval = 5000;   // Pattern Interval (ms)
 int           pixelInterval = 50;       // Pixel Interval (ms)
-int           pixelQueue = 0;           // Pattern Pixel Queue
-int           pixelCycle = 0;           // Pattern Pixel Cycle
-uint16_t      pixelCurrent = 0;         // Pattern Current Pixel Number
-uint16_t      pixelNumber = LED_COUNT;  // Total Number of Pixels
 
 
 
@@ -40,7 +39,8 @@ const char broker[]    = "192.168.1.5";
 int        port        = 1883;
 const char inTopic[] = "hourglass/change";
 
-const long interval = 10000;
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+
 unsigned long previousMillis = 0;
 
 int count = 0;
@@ -95,9 +95,10 @@ void setup() {
   Serial.println();
 
 
-  strip.begin();
-  strip.setBrightness(50);
-  strip.show(); // Initialize all pixels to 'off'
+  // FastLED.addLeds<WS2812B,PIN>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2812B,2,GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(64);
+
 }
 
 void loop() {
@@ -106,14 +107,22 @@ void loop() {
   unsigned long currentMillis = millis();                     //  Update current time
 
   
-  if(currentMillis - pixelPrevious >= pixelInterval) {        //  Check for expired time
+  if(currentMillis - pixelPrevious >= pixelInterval) {    
+    gHue+=10;    
+    FastLED.show();  
     pixelPrevious = currentMillis;                            //  Run current frame
     switch (patternCurrent) {
       case 1:
-        rainbow(10); // Flowing rainbow cycle along the whole strip
+        rainbow(); // Flowing rainbow cycle along the whole strip
         break;
       case 2:
-        mainEffect(); 
+        purpleCircle(); 
+        break;
+      case 3:
+        white();
+        break;
+      case 4:
+        strobe();
         break;    
       case 0:             
       default:
@@ -138,6 +147,8 @@ void onMqttMessage(int messageSize) {
   }
 
   message[messageArrSize] = '\0';
+
+  int beforePattern = patternCurrent;
   
   if(strcmp(message, "aran") ==0) {
     patternCurrent = 1;
@@ -145,81 +156,64 @@ void onMqttMessage(int messageSize) {
     patternCurrent = 0;
   }else if(strcmp(message, "standard") == 0) {
     patternCurrent = 2;
+  }else if(strcmp(message, "white") ==0){
+    patternCurrent = 3;
+  }else if(strcmp(message, "strobe")==0) {
+    patternCurrent = 4;
+
   }
 
-  
+  if(patternCurrent != beforePattern)
+    offEffect();
+
   Serial.print("\"");
   Serial.print(message);
   Serial.print("\" - ");
   Serial.print(patternCurrent);
   Serial.println();
-
-
 }
+
 
 void offEffect() {
-  strip.fill();
-  strip.show();
+  fill_solid(leds, NUM_LEDS, CRGB(0,0,0));
+
 }
 
-void mainEffect() {
-  if(pixelInterval != 150)
-    pixelInterval = 150;
+void rainbow() 
+{
+  // FastLED's built-in rainbow generator
+  fill_rainbow_circular( leds, NUM_LEDS, gHue);
+}
 
-  int effect_length = LED_COUNT / 2;
-
-  strip.fill(strip.Color(255, 255, 255));
-
-  for(uint16_t i=0; i < 14; i++) {
-    if(i < 7) {
-      strip.setPixelColor(
-        (i + pixelCycle) % 14, 
-        strip.Color(255 - (131 / 7) * (i), 255 - (255 / 7) * (i), 255)
-      );
-      continue;
-    }
-      strip.setPixelColor((i + pixelCycle) % 14, strip.Color(124, 0, 255));
-
-         
+void addGlitter( fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    leds[ random16(NUM_LEDS) ] += CRGB::White;
   }
-
-  pixelCycle++;
-
-  if(pixelCycle >= LED_COUNT)
-    pixelCycle = 0; 
-
-  strip.show();
 }
 
-
-
+void strobe() {
+  fadeToBlackBy( leds, NUM_LEDS, 96);
+  addGlitter(90);
+}
 
 void white() {
-  strip.fill(strip.Color(255, 255, 255));
+  fill_solid(leds, NUM_LEDS, CRGB::White);
 }
 
-void rainbow(uint8_t wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   
-  for(uint16_t i=0; i < pixelNumber; i++) {
-    strip.setPixelColor(i, Wheel((i + pixelCycle) & 255)); //  Update delay time  
-  }
-  strip.show();                             //  Update strip to match
-  pixelCycle++;                             //  Advance current cycle
-  if(pixelCycle >= 256)
-    pixelCycle = 0;                         //  Loop the cycle back to the begining
-}
 
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if(WheelPos < 85) {
-    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+int coolPos = 0;
+
+void purpleCircle()
+{
+  // a colored dot sweeping back and forth, with fading trails
+  fadeToBlackBy( leds, NUM_LEDS, 70);
+
+  //beatsin16()
+  leds[coolPos%14] = CRGB::Indigo;
+  coolPos++;
+  if(coolPos >=140){
+    coolPos = 0;
   }
-  if(WheelPos < 170) {
-    WheelPos -= 85;
-    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 

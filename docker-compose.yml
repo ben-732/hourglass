@@ -26,3 +26,15 @@ services:
       - vol-emqx-data:/opt/emqx/data
       - vol-emqx-etc:/opt/emqx/etc
       - vol-emqx-log:/opt/emqx/log
+
+  # mumble-server:
+  #   image: mumblevoip/mumble-server:latest
+  #   platform: linux/amd64
+  #   container_name: mumble-server
+  #   hostname: mumble-server
+  #   restart: on-failure
+  #   ports:
+  #     - 64738:64738
+  #     - 64738:64738/udp
+  #   environment:
+  #     MUMBLE_CONFIG_SERVER_PASSWORD: Hello
