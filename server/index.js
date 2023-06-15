@@ -1,11 +1,18 @@
 const mqtt = require("mqtt");
 
-const client = mqtt.connect("mqtt://localhost:1883");
+const { Server } = require("socket.io");
 
-const readline = require("readline").createInterface({
-  input: process.stdin,
-  output: process.stdout,
+const io = new Server({
+  /* options */
 });
+
+io.on("connection", (socket) => {
+  console.log("connected");
+});
+
+io.listen(3001);
+
+const client = mqtt.connect("mqtt://localhost:1883");
 
 client.on("connect", () => {
   console.log(`connected, ${client.options.clientId}`);
@@ -14,12 +21,7 @@ client.on("connect", () => {
   client.subscribe("disconnect");
   client.subscribe("ummm");
 
-  // setInterval(() => {
-  //   client.publish("hourglass/change", "standard");
-  // }, 3000);
-  // client.publish("hourglass/change", "aran");
   client.publish("hourglass/change", "standard");
-  // client.publish("hourglass/change", "off");
 });
 
 client.on("disconnect", () => {
