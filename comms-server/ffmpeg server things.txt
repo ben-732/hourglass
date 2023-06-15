@@ -1,0 +1,27 @@
+sudo docker run --rm -it --network=host --device /dev/snd:/dev/snd -v $PWD/mediamtx.yml:/mediamtx.yml bluenviron/mediamtx:latest-ffmpeg-rpi
+
+
+runOnInit: ffmpeg -f v4l2 -i /dev/video0 -pix_fmt yuv420p -preset ultrafast -b:v 600k -f rtsp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+runOnInitRestart: yes	
+
+
+ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f wav -listen 1 tcp://0.0.0.0:
+
+paths:
+  comms:
+    runOnInit:ffmpeg -f alsa -i plughw:2,0 -acodec libmp3lame -ab 32k  -ac 1 -f rtp rtp://localhost:$RTSP_PORT/$RTSP_PATH
+    runOnInitRestart: yes
+
+//*** WORKS .. VLC tcp://192.168.68.63:5002
+ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f wav -ab 32k -listen 1 tcp://0.0.0.0:5002
+ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f rtsp -rtsp_transport tcp rtsp://localhost:8554/mystream
+
+ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -ab 32k -f rtp rtp://0.0.0.0:5002
+
+
+
+    runOnDemand: "ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f wav -ab 32k -listen 1 tcp://localhost:$RTSP_PORT/$RTSP_PATH"
+
+
+
+sudo docker run --rm -dit --network=host --device /dev/snd:/dev/snd -v $PWD/mediamtx.yml:/mediamtx.yml bluenviron/mediamtx:latest-ffmpeg-rpi
