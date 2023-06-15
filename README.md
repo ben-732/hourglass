@@ -39,6 +39,11 @@ Running express web server
   - Privlaged access
 - Status icons for hourglass halves
 
-## Info things
+## Info / Config things
 
 SocketIo server - port 3001
+
+### EMQX Config:
+
+- Auth allow all to subscribe to $sys
+- ~~retain connect/disconnect messages~~
