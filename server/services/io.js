@@ -1,10 +1,10 @@
 // Socket IO connection and helper functions
 
-const { Server } = require("socket.io");
+import { Server } from "socket.io";
 
 let io;
 
-function Socket(server) {
+export function InitSocket(server) {
   // Create a new socket.io instance form given server
   io = new Server(server, {
     cors: {
@@ -19,4 +19,12 @@ function Socket(server) {
   return io;
 }
 
-module.exports = { io, Socket };
+function getIo() {
+  if (!io) {
+    throw new Error("Socket.io not initialized");
+  }
+
+  return io;
+}
+
+export default getIo;

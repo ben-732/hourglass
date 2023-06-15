@@ -1,11 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const { startShow } = require("../util/scenes");
-const { io } = require("../services/io");
-
-const show = startShow();
+import { Router } from "express";
+const router = Router();
+import getShow from "../util/scenes.js";
+import getIo from "../services/io.js";
 
 router.get("/", (req, res) => {
+  const show = getShow();
+
   const scenes = show.getScenes();
   res.json({
     status: 200,
@@ -16,11 +16,14 @@ router.get("/", (req, res) => {
 });
 
 router.post("/advance", (req, res) => {
+  const io = getIo();
+  const show = getShow();
+
   const scene = show.advance();
   res.json({ status: 200, message: "Success" });
 
   io.emit("updateScene", scene);
-  io.emit("activeCue", scene.id);
+  io.emit("activeScene", scene.id);
 });
 
 router.post("/reset", (req, res) => {
@@ -31,4 +34,4 @@ router.post("/reset", (req, res) => {
   io.emit("resetShow");
 });
 
-module.exports = router;
+export default router;

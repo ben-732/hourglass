@@ -37,70 +37,83 @@ const Scenes = () => {
         ]);
       });
 
-    function onActiveScene(cueId) {
+    function onSetActiveScene(cueId) {
       setActiveScene(cueId);
     }
 
-    function onSceneTime(message) {
-      const { cueId, time } = message;
-      setScenes((scenes) => {
-        // immutably Update the time for the scene with id
-        return scenes.map((scene) => {
-          if (scene.id === cueId) {
-            return { ...scene, time };
+    function updateScene(scene) {
+      setScenes((ss) =>
+        ss.map((s) => {
+          if (s.id === scene.id) {
+            return { ...s, time: new Date(scene.time).toLocaleTimeString() };
+          } else {
+            return s;
           }
-          return scene;
-        });
-      });
+        })
+      );
     }
 
-    socket.on("updateActiveScene", onActiveScene);
-    socket.on("setCueTime", onSceneTime);
+    socket.on("activeScene", onSetActiveScene);
+    socket.on("updateScene", updateScene);
 
     return () => {
-      socket.off("updateActiveScene", onActiveScene);
-      socket.off("setCueTime", onSceneTime);
+      socket.off("activeScene", onSetActiveScene);
+      socket.off("updateScene", updateScene);
     };
   }, []);
 
-  return (
-    <div className="w-96 h-96 overflow-y-scroll">
-      <table className="border-collapse table-auto w-full text-sm">
-        <thead className="sticky top-0 border-b dark:border-slate-600 bg-slate-900 ">
-          <tr className="">
-            <th className=" font-medium p-4 pl-8  pb-3 text-slate-400 dark:text-slate-200 text-left">
-              Scene
-            </th>
-            <th className=" font-medium p-4 pl-8  pb-3 text-slate-400 dark:text-slate-200 text-left">
-              Time
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white dark:bg-slate-800 ">
-          {scenes.map((scene, index) => {
-            let active = scene.id === activeScene;
+  function handleAdvanceScene() {
+    axios.post("/api/scenes/advance");
+  }
 
-            return (
-              <tr key={index} className="h-2">
-                <td
-                  className={`border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 ${
-                    active ? "dark:text-white" : "dark:text-slate-400"
-                  } `}
-                >
-                  {scene.name}
-                </td>
-                <td
-                  className={`border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500  ${
-                    active ? "dark:text-white" : "dark:text-slate-400"
-                  }`}
-                >
-                  {scene.time}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+  return (
+    <div>
+      <div className="w-96 h-96 overflow-y-scroll">
+        <table className="border-collapse table-auto w-full text-sm">
+          <thead className="sticky top-0 border-b dark:border-slate-600 bg-slate-900 ">
+            <tr className="">
+              <th className=" font-medium p-4 pl-8  pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Scene
+              </th>
+              <th className=" font-medium p-4 pl-8  pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Time
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-slate-800 ">
+            {scenes.map((scene, index) => {
+              let active = scene.id === activeScene;
+
+              return (
+                <tr key={index} className="h-2">
+                  <td
+                    className={`border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 ${
+                      active ? "dark:text-white" : "dark:text-slate-400"
+                    } `}
+                  >
+                    {scene.name}
+                  </td>
+                  <td
+                    className={`border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500  ${
+                      active ? "dark:text-white" : "dark:text-slate-400"
+                    }`}
+                  >
+                    {scene.time}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex flex-row">
+        <button
+          className="text-white flex-grow text-center bg-gray-500 py-2 px-2 mt-2 rounded-md"
+          onClick={handleAdvanceScene}
+        >
+          Advance
+        </button>
+      </div>
     </div>
   );
 };

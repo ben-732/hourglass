@@ -1,13 +1,13 @@
-const { Socket } = require("./services/io");
-const { client } = require("./services/mqtt");
+import { InitSocket } from "./services/io.js";
+import client from "./services/mqtt.js";
 
-const app = require("./app");
+import app from "./app.js";
 
-const http = require("http");
+import { createServer } from "http";
 
-const server = http.createServer(app);
+const server = createServer(app);
 
-const io = Socket(server);
+const io = InitSocket(server);
 
 server.listen(3001, () => {
   const addr = server.address();

@@ -18,6 +18,8 @@ class Show {
     sceneNames.forEach((name, index) => {
       this.scenes.push(new Scene(name, index));
     });
+
+    this.advance();
   }
 
   /**
@@ -25,7 +27,7 @@ class Show {
    *
    * @returns {Scene} The new active scene
    */
-  advanceScene() {
+  advance() {
     if (this.activeScene < this.scenes.length) {
       this.activeScene++;
 
@@ -120,11 +122,9 @@ const sceneNames = [
 let show;
 
 // Function to return the show or make a new one
-function startShow() {
-  show = new Show(sceneNames);
-  show.advanceScene();
+
+export default function getShow() {
+  if (!show) show = new Show(sceneNames);
 
   return show;
 }
-
-module.exports = { show, startShow };

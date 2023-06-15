@@ -1,4 +1,4 @@
-const { io } = require("../services/io");
+import getIo from "../services/io.js";
 
 let hourglassStatus = {
   hourglass1: {
@@ -13,6 +13,7 @@ let hourglassStatus = {
 
 // Handle connect/disconnect messages from MQTT
 function handleConnectMessage(message, topic) {
+  const io = getIo();
   // First parse the message JSON
   const parsedMessage = JSON.parse(message.toString());
 
@@ -36,4 +37,4 @@ function handleConnectMessage(message, topic) {
   io.emit("hourglassStatus", hourglassStatus);
 }
 
-module.exports = handleConnectMessage;
+export default handleConnectMessage;

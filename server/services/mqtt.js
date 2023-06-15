@@ -1,9 +1,9 @@
 // MQTT Server connection and helper functions
 
-const mqtt = require("mqtt");
-const handleConnectMessage = require("../util/hourglassStatus");
+import { connect } from "mqtt";
+import handleConnectMessage from "../util/hourglassStatus.js";
 
-const client = mqtt.connect("mqtt://localhost:1883");
+const client = connect("mqtt://localhost:1883");
 
 const listenerHeader = "$SYS/brokers/emqx_main@172.20.0.2/";
 
@@ -38,3 +38,5 @@ client.on("message", (topic, message) => {
   // Otherwise log the message to console
   console.log("[MQTT] Received message: %s %s", topic, message);
 });
+
+export default client;
