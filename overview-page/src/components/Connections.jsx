@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../socket";
+import axios from "axios";
 
 const Connections = ({ socketConnection }) => {
   const [hourglassStats, setHourglassStats] = useState({
@@ -14,6 +15,11 @@ const Connections = ({ socketConnection }) => {
   });
 
   useEffect(() => {
+    // Get initial hourglass status from server
+    axios.get("/api/hourglass/status").then((res) => {
+      setHourglassStats(res.data.status);
+    });
+
     function onHourglassStatus(value) {
       console.log(value);
       setHourglassStats(value);

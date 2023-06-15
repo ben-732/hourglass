@@ -4,6 +4,7 @@ const app = express();
 import cors from "cors";
 
 import scenesHandler from "./api/scenesHandler.js";
+import hourglassHandler from "./api/hourglassHandler.js";
 
 app.use(
   cors({
@@ -15,6 +16,7 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 app.use("/api/scenes/", scenesHandler);
+app.use("/api/hourglass/", hourglassHandler);
 
 // 404 for api
 app.use(function (req, res, next) {

@@ -1,8 +1,8 @@
 // Basic server for testing connections to the MQTT broker
 
-const mqtt = require("mqtt");
+import { connect } from "mqtt";
 
-const client = mqtt.connect("mqtt://localhost:1883", {
+const client = connect("mqtt://localhost:1883", {
   clientId: "hourglass1",
 });
 

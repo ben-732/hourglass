@@ -37,4 +37,8 @@ function handleConnectMessage(message, topic) {
   io.emit("hourglassStatus", hourglassStatus);
 }
 
+export function getHourglassStatus() {
+  return hourglassStatus;
+}
+
 export default handleConnectMessage;
