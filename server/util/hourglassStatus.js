@@ -1,4 +1,4 @@
-const { io } = require("../io");
+const { io } = require("../services/io");
 
 let hourglassStatus = {
   hourglass1: {

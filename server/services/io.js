@@ -1,3 +1,5 @@
+// Socket IO connection and helper functions
+
 const { Server } = require("socket.io");
 
 const io = new Server({

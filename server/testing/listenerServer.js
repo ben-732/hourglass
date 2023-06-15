@@ -1,3 +1,5 @@
+// Basic server for testing connections to the MQTT broker
+
 const mqtt = require("mqtt");
 
 const client = mqtt.connect("mqtt://localhost:1883", {

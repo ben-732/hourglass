@@ -1,5 +1,7 @@
+// MQTT Server connection and helper functions
+
 const mqtt = require("mqtt");
-const handleConnectMessage = require("./util/hourglassStatus");
+const handleConnectMessage = require("../util/hourglassStatus");
 
 const client = mqtt.connect("mqtt://localhost:1883");
 
