@@ -6,7 +6,7 @@ let io;
 
 function Socket(server = null) {
   // Check if there is a server instance
-  if (!server && !io) throw new Error("Socket.io server not initialized");
+  if (!server && !io) throw new Error("[Socket] Server not initialized");
   if (io) return io;
 
   // Create a new socket.io instance
@@ -17,7 +17,7 @@ function Socket(server = null) {
   });
 
   io.on("connection", (socket) => {
-    console.log("Socket Connection: " + socket.id);
+    console.log("[Socket] New Connection: " + socket.id);
   });
 
   return io;

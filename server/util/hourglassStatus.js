@@ -16,20 +16,21 @@ function handleConnectMessage(message, topic) {
   // First parse the message JSON
   const parsedMessage = JSON.parse(message.toString());
 
-  const { clientid } = parsedMessage;
+  const clientId = parsedMessage.clientid;
+  const isConnected = topic.includes("/connected");
 
   console.log(
-    "Client: %s, Connection: %s",
-    clientid,
-    topic.includes("/connected")
+    "[MQTT] Client: %s, Connection: %s",
+    clientId,
+    isConnected ? "Connected" : "Disconnected"
   );
 
   console.log(topic);
 
   // update hourglass status object
-  hourglassStatus[clientid].connected = topic.includes("/connected");
+  hourglassStatus[clientId].connected = isConnected;
 
-  hourglassStatus[clientid].lastUpdated = new Date();
+  hourglassStatus[clientId].lastUpdated = new Date();
 
   // Broadcast updated hourglass status to all connected clients
   io.emit("hourglassStatus", hourglassStatus);

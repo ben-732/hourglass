@@ -18,7 +18,7 @@ let listeners = [
 listeners = listeners.map((s) => listenerHeader + s);
 
 client.on("connect", (e) => {
-  console.log(`MQTT Connected: , ${client.options.clientId}`);
+  console.log(`[MQTT] New Connection: `, client.options.clientId);
 
   // Subscribe to all connect/disconnect messages
   for (let i of listeners) {
@@ -36,5 +36,5 @@ client.on("message", (topic, message) => {
   }
 
   // Otherwise log the message to console
-  console.log("received message %s %s", topic, message);
+  console.log("[MQTT] Received message: %s %s", topic, message);
 });
