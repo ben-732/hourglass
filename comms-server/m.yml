@@ -1,0 +1,14 @@
+api: yes
+apiAddress: 192.168.68.63:9997
+
+paths:
+  comms:
+    runOnInit: "ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f rtsp -rtsp_transport tcp rtsp://localhost:$RTSP_PORT/$RTSP_PATH
+"
+    # runOnInit: "ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f wav -ab 32k -f rtp rtp://localhost:$RTSP_PORT/$RTSP_PATH"
+    runOnInitRestart: yes
+
+# public IP of the server
+webrtcICEHostNAT1To1IPs: [192.168.68.63]
+# any port of choice
+webrtcICEUDPMuxAddress: :8189
