@@ -1,13 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const getShow = require("../util/scenes");
+const { startShow } = require("../util/scenes");
 const { io } = require("../services/io");
 
-let show = getShow();
+const show = startShow();
 
 router.get("/", (req, res) => {
   const scenes = show.getScenes();
-  res.json({ status: 200, message: "Success", scenes });
+  res.json({
+    status: 200,
+    message: "Success",
+    scenes,
+    activeScene: show.activeScene,
+  });
 });
 
 router.post("/advance", (req, res) => {

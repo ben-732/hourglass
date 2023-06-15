@@ -1,36 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { socket } from "../socket";
+import axios from "axios";
 
 const Scenes = () => {
-  const [scenes, setScenes] = useState([
-    { name: "Pre Show", id: 0, time: "" },
-    { name: "Prologue", id: 1, time: "" },
-    { name: "Act 1 Scene 1", id: 2, time: "" },
-    { name: "Act 1 Scene 2", id: 3, time: "" },
-    { name: "Act 1 Scene 3", id: 4, time: "" },
-    { name: "Act 1 Scene 4", id: 5, time: "" },
-    { name: "Act 1 Scene 5", id: 6, time: "" },
-    { name: "Act 1 Scene 6", id: 7, time: "" },
-    { name: "Act 1 Scene 7", id: 8, time: "" },
-    { name: "Act 1 Scene 8", id: 9, time: "" },
-    { name: "Act 1 Scene 9", id: 10, time: "" },
-    { name: "Act 1 Scene 10", id: 11, time: "" },
-    { name: "Act 1 Scene 11", id: 12, time: "" },
-    { name: "Act 1 Scene 12", id: 13, time: "" },
-    { name: "Act 1 Scene 13", id: 14, time: "" },
-    { name: "Intermission", id: 15, time: "" },
-    { name: "Act 2 Scene 1", id: 16, time: "" },
-    { name: "Act 2 Scene 2", id: 17, time: "" },
-    { name: "Act 2 Scene 3", id: 18, time: "" },
-    { name: "Act 2 Scene 4", id: 18, time: "" },
-    { name: "Act 2 Scene 5", id: 20, time: "" },
-    { name: "Act 2 Scene 6", id: 21, time: "" },
-    { name: "Act 2 Scene 7", id: 22, time: "" },
-    { name: "Act 2 Scene 8", id: 23, time: "" },
-    { name: "Act 2 Scene 9", id: 24, time: "" },
-    { name: "Epilogue", id: 25, time: "" },
-  ]);
-
   const [activeScene, setActiveScene] = useState(-1);
+  const [scenes, setScenes] = useState([]);
+
+  useEffect(() => {
+    // Get scenes list from server
+    axios
+      .get("/api/scenes")
+      .then((res) => {
+        console.log(res.data);
+        setScenes(
+          res.data.scenes.map((scene) => {
+            const sceneTime = scene.time;
+            return {
+              ...scene,
+              time:
+                sceneTime.trim() !== ""
+                  ? new Date(sceneTime).toLocaleTimeString()
+                  : "",
+            };
+          })
+        );
+
+        setActiveScene(res.data.activeScene);
+      })
+      .catch((err) => {
+        setScenes([
+          {
+            id: 1,
+            name: "Error Fetching Scenes",
+            time: new Date().toLocaleTimeString(),
+          },
+        ]);
+      });
+
+    function onActiveScene(cueId) {
+      setActiveScene(cueId);
+    }
+
+    function onSceneTime(message) {
+      const { cueId, time } = message;
+      setScenes((scenes) => {
+        // immutably Update the time for the scene with id
+        return scenes.map((scene) => {
+          if (scene.id === cueId) {
+            return { ...scene, time };
+          }
+          return scene;
+        });
+      });
+    }
+
+    socket.on("updateActiveScene", onActiveScene);
+    socket.on("setCueTime", onSceneTime);
+
+    return () => {
+      socket.off("updateActiveScene", onActiveScene);
+      socket.off("setCueTime", onSceneTime);
+    };
+  }, []);
 
   return (
     <div className="w-96 h-96 overflow-y-scroll">

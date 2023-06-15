@@ -29,9 +29,9 @@ class Show {
     if (this.activeScene < this.scenes.length) {
       this.activeScene++;
 
-      scenes[this.activeScene].time = new Date();
+      this.scenes[this.activeScene].time = new Date();
 
-      return scenes[this.activeScene];
+      return this.scenes[this.activeScene];
     }
 
     return null;
@@ -68,10 +68,10 @@ class Show {
 
   /**
    * Get all scenes in the show as a JSON object
-   * @returns {string} JSON string of all scenes
+   * @returns {Scene[]} JSON string of all scenes
    */
   getScenes() {
-    return JSON.stringify(this.scenes);
+    return this.scenes;
   }
 }
 
@@ -120,9 +120,11 @@ const sceneNames = [
 let show;
 
 // Function to return the show or make a new one
-function getShow() {
-  if (show) return show;
-  return new Show(sceneNames);
+function startShow() {
+  show = new Show(sceneNames);
+  show.advanceScene();
+
+  return show;
 }
 
-module.exports = getShow;
+module.exports = { show, startShow };

@@ -50,9 +50,11 @@ const Connections = ({ socketConnection }) => {
             <span className="text-sm mx-1 capitalize">{hourglass}</span>
 
             <span className="dark:text-gray-500 text-sm">
-              {new Date(
-                hourglassStats[hourglass].lastUpdated
-              ).toLocaleTimeString() || "No Time"}
+              {hourglassStats[hourglass].lastUpdated
+                ? new Date(
+                    hourglassStats[hourglass].lastUpdated
+                  ).toLocaleTimeString()
+                : "No Time"}
             </span>
           </div>
         ))}
