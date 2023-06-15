@@ -2,16 +2,25 @@
 
 const { Server } = require("socket.io");
 
-const io = new Server({
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
+let io;
 
-io.on("connection", (socket) => {
-  console.log("Socket Connection: " + socket.id);
-});
+function Socket(server = null) {
+  // Check if there is a server instance
+  if (!server && !io) throw new Error("Socket.io server not initialized");
+  if (io) return io;
 
-io.listen(3001);
+  // Create a new socket.io instance
+  io = new Server(server, {
+    cors: {
+      origin: "http://localhost:3000",
+    },
+  });
 
-module.exports.io = io;
+  io.on("connection", (socket) => {
+    console.log("Socket Connection: " + socket.id);
+  });
+
+  return io;
+}
+
+module.exports = Socket;
