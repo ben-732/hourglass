@@ -6,36 +6,11 @@ const Scenes = () => {
   const [activeScene, setActiveScene] = useState(-1);
   const [scenes, setScenes] = useState([]);
 
+  const tableDiv = React.createRef();
+
   useEffect(() => {
     // Get scenes list from server
-    axios
-      .get("/api/scenes")
-      .then((res) => {
-        console.log(res.data);
-        setScenes(
-          res.data.scenes.map((scene) => {
-            const sceneTime = scene.time;
-            return {
-              ...scene,
-              time:
-                sceneTime.trim() !== ""
-                  ? new Date(sceneTime).toLocaleTimeString()
-                  : "",
-            };
-          })
-        );
-
-        setActiveScene(res.data.activeScene);
-      })
-      .catch((err) => {
-        setScenes([
-          {
-            id: 1,
-            name: "Error Fetching Scenes",
-            time: new Date().toLocaleTimeString(),
-          },
-        ]);
-      });
+    getScenesFromServer();
 
     function onSetActiveScene(cueId) {
       setActiveScene(cueId);
@@ -53,22 +28,73 @@ const Scenes = () => {
       );
     }
 
+    function getScenesFromServer() {
+      axios
+        .get("/api/scenes")
+        .then((res) => {
+          console.log(res.data);
+          setScenes(
+            res.data.scenes.map((scene) => {
+              const sceneTime = scene.time;
+              return {
+                ...scene,
+                time:
+                  sceneTime.trim() !== ""
+                    ? new Date(sceneTime).toLocaleTimeString()
+                    : "",
+              };
+            })
+          );
+
+          setActiveScene(res.data.activeScene);
+        })
+        .catch((err) => {
+          setScenes([
+            {
+              id: 1,
+              name: "Error Fetching Scenes",
+              time: new Date().toLocaleTimeString(),
+            },
+          ]);
+        });
+    }
+
     socket.on("activeScene", onSetActiveScene);
     socket.on("updateScene", updateScene);
+    socket.on("resetShow", getScenesFromServer);
 
     return () => {
       socket.off("activeScene", onSetActiveScene);
       socket.off("updateScene", updateScene);
+      socket.off("resetShow", getScenesFromServer);
     };
   }, []);
 
+  useEffect(() => {
+    if (activeScene !== -1) {
+      // tableDiv.current.scrollTop = 53 * (activeScene - 1);
+      tableDiv.current.scrollTop = 53 * (activeScene - 1) - 20;
+    }
+  }, [activeScene]);
+
   function handleAdvanceScene() {
-    axios.post("/api/scenes/advance");
+    axios.post("/api/scenes/advance").catch((err) => {
+      console.log("Advance Error");
+    });
+  }
+
+  function handleResetShow() {
+    // Confirm action
+    if (!window.confirm("Are you sure you want to reset the show?")) return;
+
+    axios.post("/api/scenes/reset").catch((err) => {
+      console.log("Reset Error");
+    });
   }
 
   return (
     <div>
-      <div className="w-96 h-96 overflow-y-scroll">
+      <div className="w-96 h-96 overflow-y-scroll" ref={tableDiv}>
         <table className="border-collapse table-auto w-full text-sm">
           <thead className="sticky top-0 border-b dark:border-slate-600 bg-slate-900 ">
             <tr className="">
@@ -106,12 +132,19 @@ const Scenes = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex flex-row">
+      <div className="flex flex-row space-x-1">
         <button
-          className="text-white flex-grow text-center bg-gray-500 py-2 px-2 mt-2 rounded-md"
+          disabled={activeScene == scenes.length - 1}
+          className="text-white flex-grow text-center bg-blue-600 py-2 px-2 mt-2 rounded-md disabled:cursor-not-allowed hover:scale-105 transition duration-150 ease-in-out hover:bg-blue-700"
           onClick={handleAdvanceScene}
         >
           Advance
+        </button>
+        <button
+          className="text-white flex-grow text-center bg-red-600 py-2 px-2 mt-2 rounded-md disabled:cursor-not-allowed hover:scale-105 transition duration-150 ease-in-out hover:bg-red-700"
+          onClick={handleResetShow}
+        >
+          Reset Show
         </button>
       </div>
     </div>

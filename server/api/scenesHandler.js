@@ -20,6 +20,9 @@ router.post("/advance", (req, res) => {
   const show = getShow();
 
   const scene = show.advance();
+
+  if (scene === null)
+    return res.status(400).json({ status: 400, message: "No more scenes" });
   res.json({ status: 200, message: "Success" });
 
   io.emit("updateScene", scene);
@@ -27,9 +30,12 @@ router.post("/advance", (req, res) => {
 });
 
 router.post("/reset", (req, res) => {
-  const scene = show.reset();
+  const show = getShow();
+  const io = getIo();
 
-  res.json({ status: 200, message: "pain" });
+  show.reset();
+
+  res.json({ status: 200, message: "pain" }); // The message was foreshadowing :)
 
   io.emit("resetShow");
 });

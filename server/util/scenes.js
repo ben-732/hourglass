@@ -28,7 +28,7 @@ class Show {
    * @returns {Scene} The new active scene
    */
   advance() {
-    if (this.activeScene < this.scenes.length) {
+    if (this.activeScene < this.scenes.length - 1) {
       this.activeScene++;
 
       this.scenes[this.activeScene].time = new Date();
@@ -74,6 +74,22 @@ class Show {
    */
   getScenes() {
     return this.scenes;
+  }
+
+  /**
+   * Reset the show to the beginning
+   *
+   */
+  reset() {
+    this.activeScene = 0;
+
+    // Reset all scene times
+    this.scenes.forEach((scene) => {
+      scene.time = "";
+    });
+
+    // Set Preshow time
+    this.scenes[0].time = new Date();
   }
 }
 
