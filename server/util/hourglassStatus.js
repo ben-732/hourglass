@@ -1,11 +1,11 @@
 import getIo from "../services/io.js";
 
 let hourglassStatus = {
-  hourglass1: {
+  Hourglass1: {
     connected: false,
     lastUpdated: null,
   },
-  hourglass2: {
+  Hourglass2: {
     connected: false,
     lastUpdated: null,
   },

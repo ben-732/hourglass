@@ -51,9 +51,9 @@ class Show {
 
     this.activeScene = sceneId;
 
-    scenes[this.activeScene].time = new Date();
+    this.scenes[this.activeScene].time = new Date();
 
-    return scenes[this.activeScene];
+    return this.scenes[this.activeScene];
   }
 
   /**

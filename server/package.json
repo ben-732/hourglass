@@ -2,7 +2,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "midi": "^2.0.0",
+    "midi-show-control": "^2.0.0",
     "mqtt": "^4.3.7",
+    "node-osc": "^8.0.11",
     "socket.io": "^4.6.2"
   },
   "type": "module",

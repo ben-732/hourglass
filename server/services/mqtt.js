@@ -8,10 +8,10 @@ const client = connect("mqtt://localhost:1883");
 const listenerHeader = "$SYS/brokers/emqx_main@172.20.0.2/";
 
 let listeners = [
-  "clients/hourglass1/connected",
-  "clients/hourglass2/connected",
-  "clients/hourglass2/disconnected",
-  "clients/hourglass1/disconnected",
+  "clients/Hourglass1/connected",
+  "clients/Hourglass2/connected",
+  "clients/Hourglass2/disconnected",
+  "clients/Hourglass1/disconnected",
 ];
 
 // Construct listeners from listener header.

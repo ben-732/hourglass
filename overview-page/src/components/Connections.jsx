@@ -4,11 +4,11 @@ import axios from "axios";
 
 const Connections = ({ socketConnection }) => {
   const [hourglassStats, setHourglassStats] = useState({
-    hourglass1: {
+    Hourglass1: {
       connected: false,
       lastUpdated: null,
     },
-    hourglass2: {
+    Hourglass2: {
       connected: false,
       lastUpdated: null,
     },
@@ -44,7 +44,7 @@ const Connections = ({ socketConnection }) => {
           />
           <span className="text-sm mx-1 capitalize">SocketIO client</span>
         </div>
-        {["hourglass1", "hourglass2"].map((hourglass) => (
+        {["Hourglass1", "Hourglass2"].map((hourglass) => (
           <div className="flex flex-row items-center " key={hourglass}>
             <span
               className={`${
