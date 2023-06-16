@@ -11,7 +11,8 @@
 #endif
 
 
-#define CLIENT_ID "Hourglass2"
+#define CLIENT_ID "Hourglass1"
+// #define CLIENT_ID "Hourglass2"
 
 
 #define PIN 2
@@ -35,7 +36,7 @@ int           pixelInterval = 50;       // Pixel Interval (ms)
 
 
 
-const char broker[]    = "192.168.1.5";
+const char broker[]    = "192.168.1.7";
 int        port        = 1883;
 const char inTopic[] = "hourglass/change";
 

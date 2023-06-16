@@ -15,7 +15,7 @@ const io = InitSocket(server);
 
 StartMidi();
 
-server.listen(process.env.PORT || 8080, () => {
+server.listen(process.env.PORT || 3001, () => {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   console.log("[HTTP] Server listening on port " + bind);
