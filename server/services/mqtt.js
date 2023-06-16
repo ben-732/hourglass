@@ -39,4 +39,6 @@ client.on("message", (topic, message) => {
   console.log("[MQTT] Received message: %s %s", topic, message);
 });
 
-export default client;
+export default function getClient() {
+  return client;
+}

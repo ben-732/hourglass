@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { socket } from "./socket";
 import Connections from "./components/Connections";
 import Scenes from "./components/Scenes";
+import HourglassController from "./components/HourglassController";
 
 function App() {
   const [time, setTime] = useState("NAN");
@@ -47,9 +48,12 @@ function App() {
 
       <span className="py-8 text-3xl">{time}</span>
 
-      <Connections socketConnection={isConnected} />
+      <div className="flex flex-row w-full items-start justify-center">
+        <Connections socketConnection={isConnected} />
 
-      <Scenes />
+        <HourglassController />
+        <Scenes />
+      </div>
 
       {/* <audio src="rtp"></audio> */}
     </div>

@@ -9,10 +9,36 @@ let cueLists = {
 };
 
 const cueMappings = [
-  { showId: 0, cueNumber: 0 },
-  { showId: 1, cueNumber: 2 },
-  { showId: 2, cueNumber: 3 },
+  { showId: 0, cueNumber: 0 }, // Before
+  { showId: 1, cueNumber: 2 }, // Prolouge
+  { showId: 2, cueNumber: 3 }, // s1
   { showId: 3, cueNumber: 14 },
+  { showId: 4, cueNumber: 22 },
+  { showId: 5, cueNumber: 24 },
+  { showId: 6, cueNumber: 31 },
+  { showId: 7, cueNumber: 34 },
+  { showId: 8, cueNumber: 38 },
+  { showId: 9, cueNumber: 40 },
+  { showId: 10, cueNumber: 42 },
+  { showId: 11, cueNumber: 44 },
+  { showId: 12, cueNumber: 45 },
+  { showId: 13, cueNumber: 47 },
+  { showId: 14, cueNumber: 50 },
+  { showId: 15, cueNumber: 56 }, // Intermission
+].reverse();
+
+const cueMappings2 = [
+  { showId: 15, cueNumber: 0 }, // Intermission
+  { showId: 16, cueNumber: 2 }, // S1
+  { showId: 17, cueNumber: 5 }, // S2
+  { showId: 18, cueNumber: 7 }, // s3 Confirm
+  { showId: 19, cueNumber: 19 }, // s4 Confirm
+  { showId: 20, cueNumber: 34 }, //s5
+  { showId: 21, cueNumber: 38 },
+  { showId: 22, cueNumber: 47 },
+  { showId: 23, cueNumber: 49 }, /// Cofirm
+  { showId: 24, cueNumber: 53 }, ///Condifm
+  { showId: 24, cueNumber: 56 }, ///End of show --configm
 ].reverse();
 
 function StartMidi() {
@@ -74,12 +100,6 @@ function StartMidi() {
       console.log("[Midi] MSC Parse Fail");
       return;
     }
-
-    // The message is an array of numbers corresponding to the MIDI bytes:
-    //   [status, data1, data2]
-    // https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html has some helpful
-    // information interpreting the messages.
-    // console.log(`[MIDI] Message: ${message} d: ${deltaTime}`);
   });
 }
 
@@ -89,22 +109,12 @@ function handleCueChange() {
 
   // If the show is "reset"
   if (act1 == "0" && act2 == "0") {
-    const io = getIo();
-    console.log("[MIDI] Resetting...");
-    show.reset();
-    io.emit("resetShow");
+    // No active scene, Do nothing
     return;
   }
 
   if (act2 === "0") {
-    console.log("Here", act1);
-
-    console.log(cueMappings);
-    console.log(`${parseInt(act1)} >= ${"ss"}`);
-
     const scene = cueMappings.find((x) => parseInt(act1) >= x.cueNumber);
-
-    console.log(scene);
 
     if (!scene) {
       console.log("[MIDI] Scene map problems...");
@@ -121,6 +131,20 @@ function handleCueChange() {
     // Do act 1 stuff
   } else {
     // Do act 2 stuff
+    const scene = cueMappings2.find((x) => parseInt(act2) >= x.cueNumber);
+
+    if (!scene) {
+      console.log("[MIDI] Scene map problems...");
+      return;
+    }
+
+    if (show.activeScene != scene.showId) {
+      const io = getIo();
+      const updatedScene = show.jumpToScene(scene.showId);
+
+      io.emit("updateScene", updatedScene);
+      io.emit("activeScene", updatedScene.id);
+    }
   }
 }
 

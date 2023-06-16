@@ -31,7 +31,8 @@ class Show {
     if (this.activeScene < this.scenes.length - 1) {
       this.activeScene++;
 
-      this.scenes[this.activeScene].time = new Date();
+      if (!this.scenes[this.activeScene].time)
+        this.scenes[this.activeScene].time = new Date();
 
       return this.scenes[this.activeScene];
     }
@@ -51,7 +52,8 @@ class Show {
 
     this.activeScene = sceneId;
 
-    this.scenes[this.activeScene].time = new Date();
+    if (!this.scenes[this.activeScene].time)
+      this.scenes[this.activeScene].time = new Date();
 
     return this.scenes[this.activeScene];
   }

@@ -1,9 +1,9 @@
 // A Script to manually update the state of hourglass from the command line
 // Used for testing purposes
 
-const mqtt = require("mqtt");
+import { connect } from "mqtt";
 
-const client = mqtt.connect("mqtt://localhost:1883");
+const client = connect("mqtt://localhost:1883");
 
 if (!process.argv) end();
 const thing = process.argv[2].toLowerCase();
