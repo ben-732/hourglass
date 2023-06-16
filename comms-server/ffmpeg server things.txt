@@ -16,7 +16,7 @@ paths:
 ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f wav -ab 32k -listen 1 tcp://0.0.0.0:5002
 ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -f rtsp -rtsp_transport tcp rtsp://localhost:8554/mystream
 
-ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -ab 32k -f rtp rtp://0.0.0.0:5002
+ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:1,0 -ab 32k -f rtp rtp://0.0.0.0:5002
 
 
 
@@ -24,4 +24,4 @@ ffmpeg -ar 44100 -ac 1 -f alsa -i plughw:2,0 -ab 32k -f rtp rtp://0.0.0.0:5002
 
 
 
-sudo docker run --rm -dit --network=host --device /dev/snd:/dev/snd -v $PWD/mediamtx.yml:/mediamtx.yml bluenviron/mediamtx:latest-ffmpeg-rpi
+sudo docker run --rm -dit --network=host --device /dev/snd:/dev/snd -v ~/mediamtx.yml:/mediamtx.yml bluenviron/mediamtx:latest-ffmpeg-rpi
