@@ -12,11 +12,15 @@ router.get("/status", (req, res) => {
 router.post("/update", (req, res) => {
   const { state } = req.body;
 
-  if (state.trim() == "") return res.status(200).json({ message: "No Update" });
+  if (state.trim() == "") return res.status(400).json({ message: "No Update" });
+
+  console.log(`[Hourglass] Change State "${state}"`);
 
   const client = getClient();
 
   client.publish("hourglass/change", state);
+
+  res.status(200).json({ message: "success" });
 });
 
 export default router;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 
 const HourglassController = () => {
   const hourglassStates = ["aran", "off", "strobe", "standard"];
@@ -17,12 +17,23 @@ const HourglassController = () => {
 };
 
 function HourglassButton({ state }) {
+  const [changeStatus, setChangeStatus] = useState("");
   return (
     <button
-      onClick={() => axios.post("/api/hourglass/update", { state })}
+      onClick={() => {
+        setChangeStatus("loading");
+        axios
+          .post("/api/hourglass/update", { state })
+          .then(() => {
+            setChangeStatus("");
+          })
+          .catch(() => {
+            setChangeStatus("error");
+          });
+      }}
       className="px-2 py-1 w-24 bg-blue-600 m-1 capitalize rounded-md "
     >
-      {state}
+      {state} {changeStatus && ` - ${changeStatus}`}
     </button>
   );
 }
