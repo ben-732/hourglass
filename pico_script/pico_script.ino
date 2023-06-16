@@ -74,7 +74,8 @@ void setup() {
     Serial.print("MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
 
-    while (1);
+    delay(5000);
+    rp2040.reboot();
   }
 
   Serial.println("You're connected to the MQTT broker!");
@@ -104,9 +105,11 @@ void setup() {
 void loop() {
   mqttClient.poll();
 
+  // If mqtt has disconncted, restart pico
+  if(!mqttClient.connected()) rp2040.reboot();
+
   unsigned long currentMillis = millis();                     //  Update current time
 
-  
   if(currentMillis - pixelPrevious >= pixelInterval) {    
     gHue+=10;    
     FastLED.show();  
