@@ -18,7 +18,10 @@ services:
       - 8084:8084
       - 8883:8883
       - 18083:18083
-
+  web:
+    build: ./client
+    ports:
+      - 80:80
   # mumble-server:
   #   image: mumblevoip/mumble-server:latest
   #   platform: linux/amd64
