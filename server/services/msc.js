@@ -31,14 +31,14 @@ const cueMappings2 = [
   { showId: 15, cueNumber: 0 }, // Intermission
   { showId: 16, cueNumber: 2 }, // S1
   { showId: 17, cueNumber: 5 }, // S2
-  { showId: 18, cueNumber: 7 }, // s3 Confirm
-  { showId: 19, cueNumber: 19 }, // s4 Confirm
+  { showId: 18, cueNumber: 7 }, // s3 
+  { showId: 19, cueNumber: 14 }, // s4 
   { showId: 20, cueNumber: 34 }, //s5
-  { showId: 21, cueNumber: 38 },
-  { showId: 22, cueNumber: 47 },
-  { showId: 23, cueNumber: 49 }, /// Cofirm
-  { showId: 24, cueNumber: 53 }, ///Condifm
-  { showId: 24, cueNumber: 56 }, ///End of show --configm
+  { showId: 21, cueNumber: 38 }, //s6
+  { showId: 22, cueNumber: 47 }, //s7
+  { showId: 23, cueNumber: 50 }, /// s8
+  { showId: 24, cueNumber: 57 }, ///woowoww
+  { showId: 24, cueNumber: 58 }, ///End of show --configm
 ].reverse();
 
 function StartMidi() {
@@ -94,7 +94,7 @@ function StartMidi() {
         return;
       }
 
-      console.log(controlMessage);
+      // console.log(controlMessage);
     } catch (e) {
       console.log(e);
       console.log("[Midi] MSC Parse Fail");
