@@ -132,8 +132,8 @@ const sceneNames = [
   "Act 2 Scene 6",
   "Act 2 Scene 7",
   "Act 2 Scene 8",
-  "Act 2 Scene 9",
   "Epilogue",
+  "End of Show"
 ];
 
 // Show variable

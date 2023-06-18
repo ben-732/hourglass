@@ -37,8 +37,8 @@ const cueMappings2 = [
   { showId: 21, cueNumber: 38 }, //s6
   { showId: 22, cueNumber: 47 }, //s7
   { showId: 23, cueNumber: 50 }, /// s8
-  { showId: 24, cueNumber: 57 }, ///woowoww
-  { showId: 24, cueNumber: 58 }, ///End of show --configm
+  { showId: 24, cueNumber: 56 }, /// s9 epi
+  { showId: 25, cueNumber: 58 }, ///End of show --configm
 ].reverse();
 
 function StartMidi() {
