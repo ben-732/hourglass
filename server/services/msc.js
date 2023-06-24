@@ -94,7 +94,7 @@ function StartMidi() {
         return;
       }
 
-      console.log(controlMessage);
+      // console.log(controlMessage);
     } catch (e) {
       console.log(e);
       console.log("[Midi] MSC Parse Fail");

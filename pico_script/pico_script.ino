@@ -11,8 +11,8 @@
 #endif
 
 
+// #define CLIENT_ID "Hourglass1"
 #define CLIENT_ID "Hourglass1"
-// #define CLIENT_ID "Hourglass2"
 
 
 #define PIN 2
@@ -99,7 +99,7 @@ void setup() {
 
   // FastLED.addLeds<WS2812B,PIN>(leds, NUM_LEDS);
   FastLED.addLeds<WS2812B,2,GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(64);
+  FastLED.setBrightness(255);
 
 }
 

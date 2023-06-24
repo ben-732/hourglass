@@ -7,6 +7,7 @@ services:
     container_name: emqx
     environment:
       - EMQX_AUTHORIZATION__SOURCES=[]
+      - NODE_NAME=emqx@127.0.0.1
     healthcheck:
       test: ["CMD", "/opt/emqx/bin/emqx_ctl", "status"]
       interval: 5s
