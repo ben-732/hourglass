@@ -5,7 +5,7 @@ import handleConnectMessage from "../util/hourglassStatus.js";
 
 const client = connect("mqtt://localhost:1883");
 
-const listenerHeader = "$SYS/brokers/emqx_main@172.20.0.2/";
+const listenerHeader = "$SYS/brokers/emqx@172.18.0.2/";
 
 let listeners = [
   "clients/Hourglass1/connected",
