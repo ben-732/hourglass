@@ -36,7 +36,7 @@ int           pixelInterval = 50;       // Pixel Interval (ms)
 
 
 
-const char broker[]    = "192.168.1.7";
+const char broker[]    = "192.168.1.3";
 int        port        = 1883;
 const char inTopic[] = "hourglass/change";
 
@@ -47,6 +47,8 @@ unsigned long previousMillis = 0;
 int count = 0;
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
   // while (!Serial) {
@@ -96,6 +98,7 @@ void setup() {
   Serial.println(inTopic);
   Serial.println();
 
+  digitalWrite(LED_BUILTIN, HIGH);
 
   // FastLED.addLeds<WS2812B,PIN>(leds, NUM_LEDS);
   FastLED.addLeds<WS2812B,2,GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);

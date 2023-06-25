@@ -42,9 +42,9 @@ function App() {
 
   return (
     <div className="dark:bg-neutral-900 h-screen w-full flex flex-col items-center p-8 dark:text-white">
-      <span className="something dark:text-white text-lg font-bold">
+      {/* <span className="something dark:text-white text-lg font-bold">
         Comms:
-      </span>
+      </span> */}
 
       <span className="py-8 text-3xl">{time}</span>
 
@@ -52,7 +52,7 @@ function App() {
         <Connections socketConnection={isConnected} />
 
         <HourglassController />
-        <Scenes />
+        {/* <Scenes /> */}
       </div>
 
       {/* <audio src="rtp"></audio> */}

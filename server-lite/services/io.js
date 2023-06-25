@@ -8,7 +8,7 @@ export function InitSocket(server) {
   // Create a new socket.io instance form given server
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "*",
     },
   });
 

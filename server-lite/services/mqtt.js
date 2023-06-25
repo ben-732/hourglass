@@ -30,10 +30,12 @@ async function generateListeners() {
   return l.map((s) => `$SYS/brokers/${nodeName}/${s}`);
 }
 
+let listeners = [];
+
 client.on("connect", async (e) => {
   console.log(`[MQTT] New Connection: `, client.options.clientId);
 
-  const listeners = await generateListeners();
+  listeners = await generateListeners();
 
   // Subscribe to all connect/disconnect messages
   for (let i of listeners) {
